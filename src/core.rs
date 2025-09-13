@@ -1,11 +1,11 @@
-use avian2d::{PhysicsPlugins, prelude::Gravity};
+use avian2d::PhysicsPlugins;
 use bevy::{
     app::PluginGroupBuilder,
-    prelude::*,
     window::{EnabledButtons, WindowMode},
 };
 
 use crate::cameras::cameras_plugin;
+use crate::prelude::*;
 
 pub struct CorePlugins {
     pub fullscreen: bool,
@@ -21,21 +21,10 @@ impl PluginGroup for CorePlugins {
             )
             .add_group(PhysicsPlugins::default())
             .add(cameras_plugin)
-            .add(GluePlugin)
-    }
-}
-
-pub fn glue_plugin(app: &mut App) {
-    app.insert_resource(ClearColor(Color::BLACK))
-        .insert_resource(Gravity::ZERO);
-}
-
-pub struct GluePlugin;
-
-impl Plugin for GluePlugin {
-    fn build(&self, app: &mut App) {
-        app.insert_resource(ClearColor(Color::BLACK))
-            .insert_resource(Gravity::ZERO);
+            .add(|app: &mut App| {
+                app.insert_resource(ClearColor(Color::BLACK))
+                    .insert_resource(Gravity::ZERO);
+            })
     }
 }
 

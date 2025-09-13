@@ -1,16 +1,14 @@
 use std::time::Duration;
 
-use bevy::{
-    prelude::*,
-    render::view::{Layer, RenderLayers},
-};
-use bevy_inspector_egui::prelude::*;
+use bevy::render::view::{Layer, RenderLayers};
 
 use crate::cameras::PaintLayer;
+use crate::prelude::*;
 
 pub fn placeholder_plugin(app: &mut App) {
-    app.register_type::<PlaceholderInitialState>()
-        .add_systems(Startup, setup_assets)
+    #[cfg(feature = "dev")]
+    app.register_type::<PlaceholderInitialState>();
+    app.add_systems(Startup, setup_assets)
         .add_systems(Update, animate_assets);
 }
 
@@ -62,8 +60,9 @@ fn animate_assets(
 #[require(Name::new("Placeholder"), RenderLayers::layer(PaintLayer::World as Layer))]
 pub struct Placeholder;
 
-#[derive(Component, Reflect, InspectorOptions)]
-#[reflect(Component, InspectorOptions)]
+#[derive(Component)]
+#[cfg_attr(feature = "dev", derive(Reflect, InspectorOptions))]
+#[cfg_attr(feature = "dev", reflect(Component, InspectorOptions))]
 pub struct PlaceholderInitialState {
     start: f32,
     speed: f32,
