@@ -1,6 +1,7 @@
 use avian2d::PhysicsPlugins;
 use bevy::{
     app::PluginGroupBuilder,
+    asset::AssetMetaCheck,
     window::{EnabledButtons, WindowMode},
 };
 
@@ -16,6 +17,10 @@ impl PluginGroup for CorePlugins {
         PluginGroupBuilder::start::<Self>()
             .add_group(
                 DefaultPlugins
+                    .set(AssetPlugin {
+                        meta_check: AssetMetaCheck::Never,
+                        ..default()
+                    })
                     .set(ImagePlugin::default_nearest())
                     .set(new_window_plugin(self.fullscreen)),
             )
@@ -37,10 +42,10 @@ fn new_window_plugin(fullscreen: bool) -> WindowPlugin {
     let window = Window {
         mode,
         position: WindowPosition::Centered(MonitorSelection::Primary),
-        resizable: false,
+        resizable: true,
         enabled_buttons: EnabledButtons {
             minimize: true,
-            maximize: false,
+            maximize: true,
             close: true,
         },
         ..default()

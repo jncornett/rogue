@@ -5,30 +5,28 @@
 
 [features]
   default = [ "dev" ]
-  dev     = [  ]
+  dev = [
+    "bevy/file_watcher",
+    "bevy/dynamic_linking",
+    "dep:bevy-inspector-egui",
+  ]
 
 [lints.clippy]
-  must-use-candidate     = "allow"
-  needless-pass-by-value = "allow"
-  pedantic               = { level = "warn", priority = -1 }
-  # type-complexity = "allow"
-  cast-precision-loss = "allow"
-  # missing-errors-doc = "allow"
-  # must-use-candidate = "allow"
-  # return-self-not-must-use = "allow"
-  # similar-names = "allow"
   cast-possible-truncation = "allow"
-  # used-underscore-binding = "allow"
+  cast-precision-loss      = "allow"
+  missing-errors-doc       = "allow"
+  must-use-candidate       = "allow"
+  needless-pass-by-value   = "allow"
+  pedantic                 = { level = "warn", priority = -1 }
+  return-self-not-must-use = "allow"
+  similar-names            = "allow"
+  too-many-arguments       = "allow"
+  type-complexity          = "allow"
+  used-underscore-binding  = "allow"
 
 
 [dependencies]
-  avian2d = { version = "0.3.1", features = [
-    "2d",
-    "f32",
-    "parry-f32",
-    "parallel",
-    "bevy_picking",
-  ] }
+  avian2d = "0.3.1"
   bevy = { version = "^0.16", default-features = false, features = [
     "asset_processor",
     "bevy_animation",
@@ -49,8 +47,6 @@
     "bevy_window",
     "bevy_winit",
     "default_font",
-    "dynamic_linking",
-    "file_watcher",
     "ktx2",
     "multi_threaded",
     "png",
@@ -67,32 +63,31 @@
     "bevy_image",
     "bevy_render",
     "egui_clipboard",
-  ] }
+  ], optional = true }
   bevy_rand = { version = "0.11.3", features = [ "wyrand" ] }
   clap = { version = "^4.5.47", features = [
     "cargo",
-    "color",
     "derive",
-    "env",
-    "error-context",
     "help",
     "std",
     "string",
-    "suggestions",
     "unicode",
     "usage",
     "wrap_help",
   ] }
-  num-traits = "0.2.19"
   rand = "0.9.2"
   serde = { version = "1.0.219", features = [ "std", "derive" ] }
-  # figment = { version = "0.10.19", features = ["toml"] }
   thiserror = "2.0.16"
   # toml = "0.9.5"
   # anyhow = { version = "1.0.99", features = [ "std", "backtrace" ] }
   # schemars = "1.0.4"
   # serde_json = "1.0.143"
+  # num-traits = "0.2.19"
+  # figment = { version = "0.10.19", features = ["toml"] }
 
 
-[profile.dev.package."*"]
-  opt-level = 3
+[profile.dev]
+  opt-level = 1
+
+  [profile.dev.package."*"]
+    opt-level = 3
