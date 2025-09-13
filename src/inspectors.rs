@@ -1,6 +1,5 @@
 use bevy::{
     app::PluginGroupBuilder,
-    prelude::*,
     render::view::{Layer, RenderLayers},
 };
 use bevy_inspector_egui::{
@@ -9,6 +8,7 @@ use bevy_inspector_egui::{
 };
 
 use crate::cameras::{CameraPaintOrder, PaintLayer};
+use crate::prelude::*;
 
 pub struct InspectorPlugins;
 

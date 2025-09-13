@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use clap::Parser;
-use rogue::{core::CorePlugins, inspectors::InspectorPlugins, placeholders::placeholder_plugin};
+#[cfg(feature = "dev")]
+use rogue::inspectors::InspectorPlugins;
+use rogue::{core::CorePlugins, placeholders::placeholder_plugin};
 
 #[derive(Parser, Debug)]
 #[command(version, author, about, long_about = None)]
@@ -13,11 +15,15 @@ struct Args {
 fn main() {
     let args = Args::parse();
 
-    App::new()
-        .add_plugins(CorePlugins {
-            fullscreen: args.fullscreen,
-        })
-        .add_plugins(placeholder_plugin)
-        .add_plugins(InspectorPlugins)
-        .run();
+    let mut app = App::new();
+
+    app.add_plugins(CorePlugins {
+        fullscreen: args.fullscreen,
+    })
+    .add_plugins(placeholder_plugin);
+
+    #[cfg(feature = "dev")]
+    app.add_plugins(InspectorPlugins);
+
+    app.run();
 }

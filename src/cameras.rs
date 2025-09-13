@@ -1,5 +1,4 @@
 use bevy::{
-    prelude::*,
     render::{
         camera::RenderTarget,
         render_resource::{
@@ -9,7 +8,8 @@ use bevy::{
     },
     window::PrimaryWindow,
 };
-use bevy_inspector_egui::prelude::*;
+
+use crate::prelude::*;
 
 pub enum CameraPaintOrder {
     World = -2,
@@ -27,12 +27,14 @@ pub enum PaintLayer {
 #[require(Camera2d, Name::new("World Camera"), Msaa::Off, Pan, Zoom, RenderLayers::layer(PaintLayer::World as Layer))]
 pub struct WorldCamera;
 
-#[derive(Component, Default, Deref, Reflect, InspectorOptions)]
-#[reflect(Component, InspectorOptions)]
+#[derive(Component, Default, Deref)]
+#[cfg_attr(feature = "dev", derive(Reflect, InspectorOptions))]
+#[cfg_attr(feature = "dev", reflect(Component, InspectorOptions))]
 pub struct Pan(pub Vec2);
 
-#[derive(Component, Deref, Reflect, InspectorOptions)]
-#[reflect(Component, InspectorOptions)]
+#[derive(Component, Deref)]
+#[cfg_attr(feature = "dev", derive(Reflect, InspectorOptions))]
+#[cfg_attr(feature = "dev", reflect(Component, InspectorOptions))]
 pub struct Zoom(pub f32);
 
 impl Default for Zoom {
@@ -65,9 +67,9 @@ impl Default for CanvasSize {
 }
 
 pub fn cameras_plugin(app: &mut App) {
-    app.register_type::<Zoom>()
-        .register_type::<Pan>()
-        .init_resource::<CanvasSize>()
+    #[cfg(feature = "dev")]
+    app.register_type::<Zoom>().register_type::<Pan>();
+    app.init_resource::<CanvasSize>()
         .add_systems(Startup, setup_cameras)
         .add_systems(PostUpdate, (pan_and_zoom, fit_screen).chain());
 }
@@ -96,7 +98,6 @@ fn setup_cameras(
     commands.spawn(ScreenCamera);
 }
 
-#[allow(clippy::cast_precision_loss)]
 fn fit_screen(
     mut projection: Single<&mut Projection, With<ScreenCamera>>,
     canvas: Single<&Sprite, (With<Canvas>, Without<ScreenCamera>)>,
