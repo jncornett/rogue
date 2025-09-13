@@ -9,12 +9,18 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
-  ci:
-    runs-on: macos-latest
+  build:
+    runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
         target: [release]
+        runner: [macos-latest, ubuntu-latest]
+    env:
+      CARGO_TERM_COLOR: always
 
     steps:
       - uses: actions/checkout@v5
@@ -22,13 +28,80 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
-      - name: Build binaries in "${{ matrix.target }}" mode
+      - if: matrix.runner == 'ubuntu-latest'
+        name: Install Linux dependencies
+        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
+      - name: Run build in "${{ matrix.target }}" mode
         run: cargo build --profile ${{ matrix.target }}
+
+  test:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        target: [release]
+        runner: [macos-latest, ubuntu-latest]
+    env:
+      CARGO_TERM_COLOR: always
+
+    steps:
+      - uses: actions/checkout@v5
+      - name: Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+      - if: matrix.runner == 'ubuntu-latest'
+        name: Install Linux dependencies
+        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
       - name: Run tests in "${{ matrix.target }}" mode
         run: cargo test --profile ${{ matrix.target }}
+
+  lint:
+    runs-on: ubuntu-latest
+    env:
+      CARGO_TERM_COLOR: always
+
+    steps:
+      - uses: actions/checkout@v5
+      - name: Restore Cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+      - name: Install Problem Matchers
+        run: |
+          echo "::add-matcher::.github/problem-matchers/clippy-short.json"
+      - name: Run Clippy
+        run: cargo clippy --all-targets --all-features --message-format=short
+
+  fmt:
+    runs-on: ubuntu-latest
+    env:
+      CARGO_TERM_COLOR: always
+
+    steps:
+      - uses: actions/checkout@v5
+      - name: Run cargo fmt
+        run: cargo fmt --all -- --check

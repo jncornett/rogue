@@ -4402,7 +4402,6 @@ dependencies = [
  "bevy-inspector-egui",
  "bevy_rand",
  "clap",
- "num-traits",
  "rand 0.9.2",
  "serde",
  "thiserror 2.0.16",
