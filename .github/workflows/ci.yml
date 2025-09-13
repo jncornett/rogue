@@ -72,9 +72,12 @@ jobs:
         run: cargo test --profile ${{ matrix.target }}
 
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     env:
       CARGO_TERM_COLOR: always
+    strategy:
+      matrix:
+        runner: [macos-latest]
 
     steps:
       - uses: actions/checkout@v5
@@ -90,6 +93,9 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
+      - if: matrix.runner == 'ubuntu-latest'
+        name: Install Linux dependencies
+        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
       - name: Install Problem Matchers
         run: |
           echo "::add-matcher::.github/problem-matchers/clippy-short.json"
