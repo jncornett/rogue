@@ -18,7 +18,7 @@ jobs:
     strategy:
       matrix:
         target: [release]
-        runner: [macos-latest, ubuntu-latest]
+        runner: [macos-latest]
     env:
       CARGO_TERM_COLOR: always
 

@@ -5,7 +5,11 @@
 
 [features]
   default = [ "dev" ]
-  dev     = [  ]
+  dev = [
+    "bevy/file_watcher",
+    "bevy/dynamic_linking",
+    "dep:bevy-inspector-egui",
+  ]
 
 [lints.clippy]
   cast-possible-truncation = "allow"
@@ -43,8 +47,6 @@
     "bevy_window",
     "bevy_winit",
     "default_font",
-    "dynamic_linking",
-    "file_watcher",
     "ktx2",
     "multi_threaded",
     "png",
@@ -61,7 +63,7 @@
     "bevy_image",
     "bevy_render",
     "egui_clipboard",
-  ] }
+  ], optional = true }
   bevy_rand = { version = "0.11.3", features = [ "wyrand" ] }
   clap = { version = "^4.5.47", features = [
     "cargo",
