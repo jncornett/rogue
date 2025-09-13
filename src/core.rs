@@ -5,7 +5,7 @@ use bevy::{
     window::{EnabledButtons, WindowMode},
 };
 
-use crate::{cameras::cameras_plugin, tiled_assets::tiled_map_loader_plugin};
+use crate::cameras::cameras_plugin;
 
 pub struct CorePlugins {
     pub fullscreen: bool,
@@ -21,7 +21,6 @@ impl PluginGroup for CorePlugins {
             )
             .add_group(PhysicsPlugins::default())
             .add(cameras_plugin)
-            .add(tiled_map_loader_plugin)
             .add(GluePlugin)
     }
 }
