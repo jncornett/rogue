@@ -1,0 +1,34 @@
+name: CI
+run-name: CI - ${{ github.event_name }} - ${{ github.ref }}
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [release]
+
+    steps:
+      - uses: actions/checkout@v5
+      - name: Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+      - name: Build binaries in "${{ matrix.target }}" mode
+        run: cargo build --profile ${{ matrix.target }}
+      - name: Run tests in "${{ matrix.target }}" mode
+        run: cargo test --profile ${{ matrix.target }}
