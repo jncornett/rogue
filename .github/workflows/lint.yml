@@ -9,7 +9,7 @@ env:
 
 jobs:
   clippy_check:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v5
       - name: Run Clippy
