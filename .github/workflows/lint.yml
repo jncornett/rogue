@@ -12,6 +12,15 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
       - name: Install Problem Matchers
         run: |
           echo "::add-matcher::.github/problem-matchers/clippy-short.json"
