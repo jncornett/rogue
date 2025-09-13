@@ -12,5 +12,8 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v5
+      - name: Install Problem Matchers
+        run: |
+          echo "::add-matcher::.github/problem-matchers/clippy-short.json"
       - name: Run Clippy
         run: cargo clippy --all-targets --all-features
