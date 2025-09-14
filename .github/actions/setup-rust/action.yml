@@ -15,7 +15,6 @@ runs:
   steps:
     - if: ${{ inputs.readonly-cache != 'true' && inputs.key-suffix == '' }}
       name: Cache
-      id: cache
       uses: actions/cache@v4
       with:
         path: |
@@ -27,8 +26,7 @@ runs:
         restore-keys: |
           ${{ runner.os }}-${{ inputs.key }}-
     - if: ${{ inputs.readonly-cache != 'true' && inputs.key-suffix != '' }}
-      name: Cache
-      id: cache
+      name: Cache (${{ inputs.key-suffix }})
       uses: actions/cache@v4
       with:
         path: |
@@ -42,7 +40,6 @@ runs:
           ${{ runner.os }}-${{ inputs.key }}-
     - if: ${{ inputs.readonly-cache == 'true' && inputs.key-suffix == '' }}
       name: Restore Cache
-      id: cache
       uses: actions/cache/restore@v4
       with:
         path: |
@@ -54,8 +51,7 @@ runs:
         restore-keys: |
           ${{ runner.os }}-${{ inputs.key }}-
     - if: ${{ inputs.readonly-cache == 'true' && inputs.key-suffix != '' }}
-      name: Restore Cache
-      id: cache
+      name: Restore Cache (${{ inputs.key-suffix }})
       uses: actions/cache/restore@v4
       with:
         path: |
