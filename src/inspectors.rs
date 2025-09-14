@@ -7,7 +7,7 @@ use bevy_inspector_egui::{
     quick::WorldInspectorPlugin,
 };
 
-use crate::cameras::{CameraPaintOrder, PaintLayer};
+use crate::core::cameras::{CameraPaintOrder, PaintLayer};
 use crate::prelude::*;
 
 pub struct InspectorPlugins;
