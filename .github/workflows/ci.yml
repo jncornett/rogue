@@ -23,23 +23,10 @@ jobs:
       CARGO_TERM_COLOR: always
 
     steps:
-      - uses: actions/checkout@v5
-      - name: Cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-            ${{ runner.os }}-cargo-
-      - if: matrix.runner == 'ubuntu-latest'
-        name: Install Linux dependencies
-        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Setup Rust
+        uses: ./.github/actions/setup-rust
       - name: Run build in "${{ matrix.target }}" mode
         run: cargo build --profile ${{ matrix.target }}
 
@@ -54,23 +41,12 @@ jobs:
       CARGO_TERM_COLOR: always
 
     steps:
-      - uses: actions/checkout@v5
-      - name: Cache
-        uses: actions/cache/restore@v4
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Setup Rust
+        uses: ./.github/actions/setup-rust
         with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-            ${{ runner.os }}-cargo-
-      - if: matrix.runner == 'ubuntu-latest'
-        name: Install Linux dependencies
-        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
+          readonly-cache: true
       - name: Run tests in "${{ matrix.target }}" mode
         run: cargo test --profile ${{ matrix.target }}
 
@@ -84,23 +60,12 @@ jobs:
         runner: [macos-latest]
 
     steps:
-      - uses: actions/checkout@v5
-      - name: Cache
-        uses: actions/cache/restore@v4
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Setup Rust
+        uses: ./.github/actions/setup-rust
         with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-            ${{ runner.os }}-cargo-
-      - if: matrix.runner == 'ubuntu-latest'
-        name: Install Linux dependencies
-        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
+          key-suffix: clippy 
       - name: Install Problem Matchers
         run: |
           echo "::add-matcher::.github/problem-matchers/clippy-short.json"
