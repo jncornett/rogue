@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use clap::Parser;
 #[cfg(feature = "dev")]
 use rogue::inspectors::InspectorPlugins;
-use rogue::{core::CorePlugins, placeholders::placeholder_plugin};
+use rogue::{app::AppPlugins, placeholders::placeholder_plugin};
 
 #[derive(Parser, Debug)]
 #[command(version, author, about, long_about = None)]
@@ -17,7 +17,7 @@ fn main() {
 
     let mut app = App::new();
 
-    app.add_plugins(CorePlugins {
+    app.add_plugins(AppPlugins {
         fullscreen: args.fullscreen,
     })
     .add_plugins(placeholder_plugin);

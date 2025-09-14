@@ -1,18 +1,12 @@
-use avian2d::PhysicsPlugins;
-use bevy::{
-    app::PluginGroupBuilder,
-    asset::AssetMetaCheck,
-    window::{EnabledButtons, WindowMode},
-};
+use bevy::{app::PluginGroupBuilder, asset::AssetMetaCheck, window::WindowMode};
 
-use crate::cameras::cameras_plugin;
-use crate::prelude::*;
+use crate::{cameras::cameras_plugin, prelude::*};
 
-pub struct CorePlugins {
+pub struct AppPlugins {
     pub fullscreen: bool,
 }
 
-impl PluginGroup for CorePlugins {
+impl PluginGroup for AppPlugins {
     fn build(self) -> PluginGroupBuilder {
         PluginGroupBuilder::start::<Self>()
             .add_group(
@@ -43,11 +37,6 @@ fn new_window_plugin(fullscreen: bool) -> WindowPlugin {
         mode,
         position: WindowPosition::Centered(MonitorSelection::Primary),
         resizable: true,
-        enabled_buttons: EnabledButtons {
-            minimize: true,
-            maximize: true,
-            close: true,
-        },
         ..default()
     };
     WindowPlugin {
