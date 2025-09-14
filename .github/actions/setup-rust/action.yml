@@ -13,7 +13,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - if: ${{ inputs.readonly-cache != 'true' }}
+    - if: ${{ inputs.readonly-cache != 'true' && inputs.key-suffix == '' }}
       name: Cache
       id: cache
       uses: actions/cache@v4
@@ -23,14 +23,26 @@ runs:
           ~/.cargo/registry/cache/
           ~/.cargo/git/db/
           target/
-        key: ${{ runner.os }}-${{ inputs.key }}-${{ hashFiles('**/Cargo.lock') }}${{ inputs.key-suffix && format('-{0}', inputs.key-suffix) }}
+        key: ${{ runner.os }}-${{ inputs.key }}-${{ hashFiles('**/Cargo.lock') }}
         restore-keys: |
-          ${{ inputs.key-suffix && format('{0}-{1}-{2}-{3}', runner.os, inputs.key, hashFiles('**/Cargo.lock'), inputs.key-suffix) }}
+          ${{ runner.os }}-${{ inputs.key }}-
+    - if: ${{ inputs.readonly-cache != 'true' && inputs.key-suffix != '' }}
+      name: Cache
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ runner.os }}-${{ inputs.key }}-${{ hashFiles('**/Cargo.lock') }}-${{ inputs.key-suffix }}
+        restore-keys: |
           ${{ runner.os }}-${{ inputs.key }}-${{ hashFiles('**/Cargo.lock') }}
           ${{ runner.os }}-${{ inputs.key }}-
-    - if: ${{ inputs.readonly-cache == 'true' }}
+    - if: ${{ inputs.readonly-cache == 'true' && inputs.key-suffix == '' }}
       name: Restore Cache
-      id: restore-cache
+      id: cache
       uses: actions/cache/restore@v4
       with:
         path: |
@@ -38,10 +50,32 @@ runs:
           ~/.cargo/registry/cache/
           ~/.cargo/git/db/
           target/
-        key: ${{ runner.os }}-${{ inputs.key }}-${{ hashFiles('**/Cargo.lock') }}${{ inputs.key-suffix && format('-{0}', inputs.key-suffix) }}
+        key: ${{ runner.os }}-${{ inputs.key }}-${{ hashFiles('**/Cargo.lock') }}
         restore-keys: |
-          ${{ inputs.key-suffix && format('{0}-{1}-{2}-{3}', runner.os, inputs.key, hashFiles('**/Cargo.lock'), inputs.key-suffix) }}
           ${{ runner.os }}-${{ inputs.key }}-
+    - if: ${{ inputs.readonly-cache == 'true' && inputs.key-suffix != '' }}
+      name: Restore Cache
+      id: cache
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ runner.os }}-${{ inputs.key }}-${{ hashFiles('**/Cargo.lock') }}-${{ inputs.key-suffix }}
+        restore-keys: |
+          ${{ runner.os }}-${{ inputs.key }}-${{ hashFiles('**/Cargo.lock') }}
+          ${{ runner.os }}-${{ inputs.key }}-
+    - name: Sccache Action
+      uses: Mozilla-Actions/sccache-action@v0.0.9
+    - name: Set Sccache Environment Variables
+      shell: bash
+      run: |
+        {
+          echo SCCACHE_GHA_ENABLED=true
+          echo RUSTC_WRAPPER=sccache
+        } >> "$GITHUB_ENV"
     - if: ${{ runner.os == 'Linux' }}
       name: Install Linux dependencies
       shell: bash
