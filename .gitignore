@@ -1,1 +1,9 @@
 /target
+.DS_Store
+.envrc
+.env
+.env.*
+.netrc
+*.key
+.idea
+/assets/q/*
