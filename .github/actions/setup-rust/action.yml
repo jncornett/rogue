@@ -1,0 +1,78 @@
+name: Setup Rust
+description: Setup Rust environment for CI workflows
+inputs:
+  key:
+    description: A disambiguator namespace for the cache.
+    default: cargo
+  key-suffix:
+    description: An additional suffix to append to the cache key.
+    default: ""
+  readonly-cache:
+    description: Whether to update the cache after a job completes or not.
+    default: "false"
+runs:
+  using: "composite"
+  steps:
+    - if: ${{ inputs.readonly-cache != 'true' && inputs.key-suffix == '' }}
+      name: Cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ runner.os }}-${{ inputs.key }}-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ inputs.key }}-
+    - if: ${{ inputs.readonly-cache != 'true' && inputs.key-suffix != '' }}
+      name: Cache (${{ inputs.key-suffix }})
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ runner.os }}-${{ inputs.key }}-${{ hashFiles('**/Cargo.lock') }}-${{ inputs.key-suffix }}
+        restore-keys: |
+          ${{ runner.os }}-${{ inputs.key }}-${{ hashFiles('**/Cargo.lock') }}
+          ${{ runner.os }}-${{ inputs.key }}-
+    - if: ${{ inputs.readonly-cache == 'true' && inputs.key-suffix == '' }}
+      name: Restore Cache
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ runner.os }}-${{ inputs.key }}-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ inputs.key }}-
+    - if: ${{ inputs.readonly-cache == 'true' && inputs.key-suffix != '' }}
+      name: Restore Cache (${{ inputs.key-suffix }})
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ runner.os }}-${{ inputs.key }}-${{ hashFiles('**/Cargo.lock') }}-${{ inputs.key-suffix }}
+        restore-keys: |
+          ${{ runner.os }}-${{ inputs.key }}-${{ hashFiles('**/Cargo.lock') }}
+          ${{ runner.os }}-${{ inputs.key }}-
+    - name: Sccache Action
+      uses: Mozilla-Actions/sccache-action@v0.0.9
+    - name: Set Sccache Environment Variables
+      shell: bash
+      run: |
+        {
+          echo SCCACHE_GHA_ENABLED=true
+          echo RUSTC_WRAPPER=sccache
+        } >> "$GITHUB_ENV"
+    - if: ${{ runner.os == 'Linux' }}
+      name: Install Linux dependencies
+      shell: bash
+      run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
