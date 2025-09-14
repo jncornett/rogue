@@ -1,6 +1,6 @@
 use bevy::{app::PluginGroupBuilder, asset::AssetMetaCheck, window::WindowMode};
 
-use crate::{cameras::cameras_plugin, prelude::*};
+use crate::{core::cameras::cameras_plugin, prelude::*};
 
 pub struct AppPlugins {
     pub fullscreen: bool,

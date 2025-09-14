@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use bevy::render::view::{Layer, RenderLayers};
 
-use crate::cameras::PaintLayer;
+use crate::core::cameras::PaintLayer;
 use crate::prelude::*;
 
 pub fn placeholder_plugin(app: &mut App) {
