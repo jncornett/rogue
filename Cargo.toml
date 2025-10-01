@@ -65,7 +65,7 @@
     "egui_clipboard",
   ], optional = true }
   bevy_rand = { version = "0.11.3", features = [ "wyrand" ] }
-  clap = { version = "^4.5.47", features = [
+  clap = { version = "^4.5.48", features = [
     "cargo",
     "derive",
     "help",
